@@ -1,7 +1,6 @@
 databases:
   - name: student-db
     databaseName: ocampo_student
-    user: postgres
     plan: free
     region: oregon
 
