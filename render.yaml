@@ -1,0 +1,56 @@
+databases:
+  - name: student-db
+    databaseName: ocampo_student
+    user: postgres
+    plan: free
+    region: oregon
+
+services:
+  # Backend: Spring Boot Web Service (Docker runtime)
+  - type: web
+    name: student-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    region: oregon
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: student-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: student-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: student-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: student-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: student-db
+          property: password
+
+  # Frontend: Vite React Static Site
+  - type: web
+    name: student-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    plan: free
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: student-backend
+          envVarKey: RENDER_EXTERNAL_URL
