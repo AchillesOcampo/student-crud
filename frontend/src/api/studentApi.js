@@ -1,4 +1,5 @@
-const BASE_URL = '/ocampo/students';
+const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
+const BASE_URL = `${API_BASE}/ocampo/students`;
 
 /**
  * Fetch all students from backend
